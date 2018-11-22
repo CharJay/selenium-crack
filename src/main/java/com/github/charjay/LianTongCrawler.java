@@ -14,11 +14,9 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContexts;
 import org.jsoup.Jsoup;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.html5.SessionStorage;
 import org.openqa.selenium.interactions.Actions;
 
 import javax.imageio.ImageIO;
@@ -32,6 +30,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +42,7 @@ public class LianTongCrawler {
     private static String BASE_PATH = "d:\\temp\\";
     //小方块距离左边界距离
     private static int START_DISTANCE = 22;
-    private static ChromeDriver driver = null;
+    private static WebDriver driver = null;
 
     static {
         System.setProperty("webdriver.chrome.driver", "D:\\temp\\chromedriver");
@@ -58,6 +57,7 @@ public class LianTongCrawler {
 
 
     public static void crawl() {
+        String cookie="";
         driver = new ChromeDriver();
         int sum = 0;
         for (int i = 0; i < 20; i++) {
@@ -67,7 +67,7 @@ public class LianTongCrawler {
                 driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
                 //conf
                 driver.get("http://upay.10010.com/npfwap/npfMobWap/recharge/index.html?version=wap&desmobile=6672070486447365");
-                driver.findElement(By.id("number")).sendKeys("15394415803");
+                driver.findElement(By.id("number")).sendKeys("13073129876");
                 driver.findElement(By.id("cardnumber")).sendKeys("9802026646278146172");
 
                 Thread.sleep(1 * 1000);
@@ -90,6 +90,20 @@ public class LianTongCrawler {
                     Thread.sleep(moveEntity.getSleepTime());
                 }
                 actions.release(element).perform();
+
+
+                Set<Cookie> cookies = driver.manage().getCookies();
+                Iterator<Cookie> its = cookies.iterator();
+                while(its.hasNext()){
+                    //upay_user
+                    Cookie it = its.next();
+                    if(it.getName().equals("upay_user")){
+                        cookie=it.getName()+"=="+it.getValue();
+                        System.out.println(cookie);
+                        return;
+                    }
+
+                }
                 sum++;
                 Thread.sleep(2 * 1000);
             } catch (Exception e) {
@@ -98,6 +112,7 @@ public class LianTongCrawler {
         }
         driver.quit();
         System.out.println("sum="+sum);
+        System.out.println("cookie="+cookie);
     }
 
     private static void downloadOriginalImg(int i, String originalUrl, Set<Cookie> cookieSet) throws IOException {
