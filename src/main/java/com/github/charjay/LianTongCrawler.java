@@ -98,7 +98,7 @@ public class LianTongCrawler {
                     //upay_user
                     Cookie it = its.next();
                     if(it.getName().equals("upay_user")){
-                        cookie=it.getName()+"=="+it.getValue();
+                        cookie=it.getName()+"="+it.getValue();
                         System.out.println(cookie);
                         return;
                     }
